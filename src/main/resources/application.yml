@@ -1,0 +1,83 @@
+### Base Spring Config
+# Spring Config
+spring:
+  profiles:
+    active: default
+  application:
+    name: catch-mind
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+    hikari:
+      data-source-properties:
+        rewriteBatchedStatements: true
+  jpa:
+    defer-datasource-initialization: true
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
+        order_updates: true
+        order_inserts: true
+        jdbc:
+          batch_size: 100
+    open-in-view: false
+  sql:
+    init:
+      platform: mysql
+      mode: always
+
+#Debug Config
+debug: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+# Log Config
+logging:
+  level:
+    com.example.Practice: debug
+    org.springframework.web.servlet: debug
+    org.hibernate.type.descriptor.sql: trace
+
+# Exception Handle
+server:
+  error:
+    include-exception: true
+    include-stacktrace: always
+  port: 8080
+
+# JWT Config
+jwt:
+  secret-key: ${TOKEN_SECRET}
+  access:
+    expiration: ${ACCESS_TOKEN_EXPIRATION}
+    header: ${ACCESS_TOKEN_HEADER}
+  refresh:
+    expiration: ${REFRESH_TOKEN_EXPIRATION}
+    header: ${REFRESH_TOKEN_HEADER}
+
+---
+### Local Config
+spring:
+  config:
+    activate:
+      on-profile: local
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+---
+### Develop Config
+spring:
+  config:
+    activate:
+      on-profile: dev
+  jpa:
+    hibernate:
+      ddl-auto: create
