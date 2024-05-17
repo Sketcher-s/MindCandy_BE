@@ -23,7 +23,7 @@ jobs:
       - name: 환경 변수 파일 생성
         run: |
           touch .env
-          echo "{{ secrets.ENV_VARS }}" >> .env
+          echo "${{ secrets.ENV_VARS }}" >> .env
           cat .env
 
       - name: 빌드 권한 설정
