@@ -59,8 +59,9 @@ jobs:
           envs: COMPOSE, USER, APP
           # 도커 작업
           script: |
-            sudo docker pull $USER/$APP:latest
             sudo docker stop $APP
             sudo docker rm $APP
+            sudo docker rmi $APP
+            sudo docker pull $USER/$APP:latest
             sudo docker run -d --name $APP -p 8080:8080 $USER/$APP:latest
             sudo docker container prune -f
