@@ -1,8 +1,8 @@
 ### Base Spring Config
 # Spring Config
 spring:
-  config:
-    import: file:.env[.properties]
+#  config:
+#    import: file:.env[.properties]
   profiles:
     active: default
   application:
