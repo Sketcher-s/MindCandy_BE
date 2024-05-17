@@ -22,7 +22,8 @@ jobs:
 
       - name: 환경 변수 파일 생성
         run: |
-          echo "{{ secrets.ENV_VARS }}" > .env
+          touch .env
+          echo "{{ secrets.ENV_VARS }}" >> .env
 
       - name: 빌드 권한 설정
         run: chmod +x gradlew
