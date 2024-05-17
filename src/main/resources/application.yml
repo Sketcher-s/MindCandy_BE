@@ -1,8 +1,6 @@
 ### Base Spring Config
 # Spring Config
 spring:
-  config:
-    import: file:.env[.properties]
   profiles:
     active: default
   application:
@@ -68,6 +66,7 @@ jwt:
 ### Local Config
 spring:
   config:
+    import: file:.env[.properties]
     activate:
       on-profile: local
   jpa:
