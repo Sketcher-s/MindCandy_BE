@@ -42,7 +42,7 @@ jobs:
           USER: ${{ secrets.DOCKER_USERNAME }}
           APP: ${{ secrets.DOCKER_APP_NAME }}
         run: |
-          docker build -t $USER/$APP -f ./Dockerfile .
+          docker-compose -f docker-compose.yml build
           docker push $USER/$APP:latest
   CD:
     runs-on: ubuntu-latest
