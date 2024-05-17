@@ -24,7 +24,6 @@ jobs:
         run: |
           touch .env
           echo "${{ secrets.ENV_VARS }}" >> .env
-          cat .env
 
       - name: 빌드 권한 설정
         run: chmod +x gradlew
@@ -43,7 +42,7 @@ jobs:
           USER: ${{ secrets.DOCKER_USERNAME }}
           APP: ${{ secrets.DOCKER_APP_NAME }}
         run: |
-          docker-compose -f docker-compose.yml build
+          docker build -t $USER/$APP -f ./Dockerfile .
           docker push $USER/$APP:latest
   CD:
     runs-on: ubuntu-latest
@@ -58,11 +57,11 @@ jobs:
           host: ${{ secrets.HOST }} # EC2 인스턴스 퍼블릭 DNS
           username: ubuntu
           key: ${{ secrets.PRIVATE_KEY }} # pem 키
-          envs: COMPOSE, USER, APP
+          envs: USER, APP
           # 도커 작업
           script: |
+            sudo docker pull $USER/$APP:latest
             sudo docker stop $APP
             sudo docker rm $APP
-            sudo docker rmi $USER/$APP
-            sudo docker pull $USER/$APP:latest
-            sudo docker-compose -f docker-compose.yml up -d
+            sudo docker run -d --name $APP -p 8080:8080 $USER/$APP:latest
+            sudo docker container prune -f
