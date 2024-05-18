@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 import shop.catchmind.common.AuditingField;
 
 @Entity
-@Table(name = "member")
+@Table(name = "picture")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Picture extends AuditingField {

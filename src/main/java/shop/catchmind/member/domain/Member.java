@@ -30,8 +30,7 @@ public class Member extends AuditingField {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password", nullable = false, length = 12)
-    @Size(min = 8, max = 12)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Builder
