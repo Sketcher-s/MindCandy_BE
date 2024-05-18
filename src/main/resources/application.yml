@@ -64,6 +64,32 @@ jwt:
     expiration: ${REFRESH_TOKEN_EXPIRATION}
     header: ${REFRESH_TOKEN_HEADER}
 
+# AWS Setting
+cloud:
+  aws:
+    s3:
+      bucket: ${BUCKET} # 버킷 환경 변수
+      path:
+        file: ${BUCKET_FOLDER} # 파일 경로
+    region:
+      static: ap-northeast-2 # Region (이 경우는 서울)
+    stack:
+      auto: false
+    credentials:
+      accessKey: ${S3_ACCESS} # Access Key 환경 변수
+      secretKey: ${S3_SECRET} # Secret Access Key 환경 변수
+
+springdoc:
+  swagger-ui:
+    path: swagger
+    # "사용해 보기" 섹션이 기본적으로 활성화 되어야 하는지 여부를 제어
+    try-it-out-enabled: true
+    # filter 검색
+    filter: true
+    operations-sorter: method
+    # ms 단위 표시
+    display-request-duration: true
+
 ---
 ### Local Config
 spring:
@@ -83,14 +109,3 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-
-springdoc:
-  swagger-ui:
-    path: swagger
-    # "사용해 보기" 섹션이 기본적으로 활성화 되어야 하는지 여부를 제어
-    try-it-out-enabled: true
-    # filter 검색
-    filter: true
-    operations-sorter: method
-    # ms 단위 표시
-    display-request-duration: true
