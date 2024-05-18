@@ -83,3 +83,14 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+
+springdoc:
+  swagger-ui:
+    path: swagger
+    # "사용해 보기" 섹션이 기본적으로 활성화 되어야 하는지 여부를 제어
+    try-it-out-enabled: true
+    # filter 검색
+    filter: true
+    operations-sorter: method
+    # ms 단위 표시
+    display-request-duration: true

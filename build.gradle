@@ -34,6 +34,10 @@ dependencies {
 
 	// JWT
 	implementation 'com.auth0:java-jwt:4.2.1'
+  
+	//swagger
+	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.3.0'
+	testImplementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-api', version: '2.3.0'
 }
 
 tasks.named('test') {
