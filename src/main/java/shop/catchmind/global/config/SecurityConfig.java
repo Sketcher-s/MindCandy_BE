@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import shop.catchmind.auth.application.AuthService;
+import shop.catchmind.auth.application.LoginService;
 import shop.catchmind.auth.filter.CustomJsonAuthenticationFilter;
 import shop.catchmind.auth.filter.JwtAuthProcessingFilter;
 import shop.catchmind.auth.handler.LoginFailureHandler;
@@ -37,7 +37,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final AuthService authService;
+    private final LoginService loginService;
     private final JwtProvider jwtDriver;
     private final MemberRepository memberRepository;
     private final ObjectMapper objectMapper;
@@ -56,9 +56,9 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorize ->
                                 authorize
-                                        .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**",
-                                                "/health", "/health/**").permitAll()
                                         .anyRequest().permitAll()
+//                                        .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**",
+//                                                "/health", "/health/**").permitAll()
                 )
                 .addFilterAfter(customJsonAuthenticationFilter(), LogoutFilter.class)
                 .addFilterBefore(jwtAuthProcessingFilter(), CustomJsonAuthenticationFilter.class);
@@ -76,13 +76,13 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(passwordEncoder());
-        provider.setUserDetailsService(authService);
+        provider.setUserDetailsService(loginService);
         return new ProviderManager(provider);
     }
 
     @Bean
     public LoginSuccessHandler loginSuccessHandler() {
-        return new LoginSuccessHandler(jwtDriver, memberRepository, objectMapper);
+        return new LoginSuccessHandler(jwtDriver, memberRepository);
     }
 
     @Bean
