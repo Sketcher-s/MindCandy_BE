@@ -1,5 +1,6 @@
 package shop.catchmind.gpt.presentation;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.catchmind.gpt.application.GptService;
 import shop.catchmind.gpt.dto.InterpretDto;
 
+@Hidden
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/gpt")
