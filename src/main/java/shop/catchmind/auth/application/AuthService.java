@@ -1,31 +1,32 @@
 package shop.catchmind.auth.application;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import shop.catchmind.auth.dto.AuthenticationDto;
+import shop.catchmind.auth.dto.request.IsExistedEmailRequest;
+import shop.catchmind.auth.dto.request.SignUpRequest;
+import shop.catchmind.auth.dto.response.IsExistedEmailResponse;
 import shop.catchmind.member.domain.Member;
 import shop.catchmind.member.repository.MemberRepository;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class AuthService implements UserDetailsService {
+public class AuthService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Override
-    public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(RuntimeException::new);// TODO: Exception 처리 필요
+    public void signUp(final SignUpRequest request) {
+        Member member = request.toMember(passwordEncoder);
+        memberRepository.save(member);
+    }
 
-        return AuthenticationDto.builder()
-                .id(member.getId())
-                .email(member.getEmail())
-                .password(member.getPassword())
+    public IsExistedEmailResponse isExistedEmail(IsExistedEmailRequest request) {
+        return IsExistedEmailResponse.builder()
+                .isExisted(memberRepository.existsByEmail(request.email()))
                 .build();
+
     }
 }

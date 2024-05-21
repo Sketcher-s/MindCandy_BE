@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import shop.catchmind.global.config.constant.GptConstant;
+import shop.catchmind.gpt.constant.GptConstant;
 import shop.catchmind.gpt.dto.GptMessage;
 import shop.catchmind.gpt.dto.GptResponse;
 import shop.catchmind.gpt.dto.InterpretDto;

@@ -1,11 +1,11 @@
-package shop.catchmind.global.config.constant;
+package shop.catchmind.auth.constant;
 
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-public final class AuthenticationProcessingConstant {
+public final class AuthProcessingConstant {
 
-    private AuthenticationProcessingConstant() {}
-    public static final String DEFAULT_LOGIN_REQUEST_URL = "/api/auth/login";
+    private AuthProcessingConstant() {}
+    public static final String DEFAULT_LOGIN_REQUEST_URL = "/auth/login";
     public static final String HTTP_METHOD = "POST";
     public static final String CONTENT_TYPE = "application/json";
     public static final String USERNAME_KEY = "email";

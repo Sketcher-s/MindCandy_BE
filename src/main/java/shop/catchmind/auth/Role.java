@@ -2,13 +2,13 @@ package shop.catchmind.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import shop.catchmind.global.config.constant.AuthorityConstant;
+import shop.catchmind.auth.constant.AuthRoleConstant;
 
 @Getter
 @AllArgsConstructor
 public enum Role {
 
-    USER(AuthorityConstant.USER)
+    USER(AuthRoleConstant.USER)
     ;
 
     private final String authority;

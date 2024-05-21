@@ -14,7 +14,7 @@ import shop.catchmind.member.repository.MemberRepository;
 import java.util.Date;
 import java.util.Optional;
 
-import static shop.catchmind.global.config.constant.JwtConstant.*;
+import static shop.catchmind.auth.constant.JwtConstant.*;
 
 @Component
 @RequiredArgsConstructor

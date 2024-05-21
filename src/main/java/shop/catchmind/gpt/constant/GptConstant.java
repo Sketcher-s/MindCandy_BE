@@ -1,4 +1,4 @@
-package shop.catchmind.global.config.constant;
+package shop.catchmind.gpt.constant;
 
 
 public final class GptConstant {

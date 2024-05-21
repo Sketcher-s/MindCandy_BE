@@ -1,4 +1,4 @@
-package shop.catchmind.global.config.constant;
+package shop.catchmind.auth.constant;
 
 public final class JwtConstant {
 
