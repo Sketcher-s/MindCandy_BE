@@ -46,7 +46,7 @@ public class AuthController {
                     " isExisted = false의 경우, 동일한 이메일이 없습니다.")
     })
     public ResponseEntity<IsExistedEmailResponse> isValidEmail(
-            @RequestBody final IsExistedEmailRequest request
+            @RequestBody @Valid final IsExistedEmailRequest request
     ) {
         return ResponseEntity.ok(authService.isExistedEmail(request));
     }
