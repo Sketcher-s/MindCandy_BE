@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static shop.catchmind.global.config.constant.AuthenticationProcessingConstant.*;
+import static shop.catchmind.auth.constant.AuthProcessingConstant.*;
 
 public class CustomJsonAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
