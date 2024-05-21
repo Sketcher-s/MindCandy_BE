@@ -79,6 +79,7 @@ cloud:
       accessKey: ${S3_ACCESS} # Access Key 환경 변수
       secretKey: ${S3_SECRET} # Secret Access Key 환경 변수
 
+# Swagger Setting
 springdoc:
   swagger-ui:
     path: swagger
@@ -89,6 +90,11 @@ springdoc:
     operations-sorter: method
     # ms 단위 표시
     display-request-duration: true
+
+# Url Setting
+url:
+  be: ${BE_URL}
+  fe: ${FE_URL}
 
 ---
 ### Local Config

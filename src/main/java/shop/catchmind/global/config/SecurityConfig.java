@@ -1,7 +1,9 @@
 package shop.catchmind.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,6 +34,7 @@ import shop.catchmind.member.repository.MemberRepository;
 import java.util.Arrays;
 import java.util.List;
 
+@Getter
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -41,6 +44,12 @@ public class SecurityConfig {
     private final JwtProvider jwtDriver;
     private final MemberRepository memberRepository;
     private final ObjectMapper objectMapper;
+
+    @Value("${url.be}")
+    private String backEndUrl;
+
+    @Value("${url.fe}")
+    private String frontEndUrl;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -107,7 +116,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource apiConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:8080"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:8080", frontEndUrl, backEndUrl));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization"));

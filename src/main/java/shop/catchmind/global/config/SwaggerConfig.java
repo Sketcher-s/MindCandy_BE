@@ -39,12 +39,12 @@ public class SwaggerConfig {
     private final String securitySchemeName = "bearerAuth";
 
     @Bean
-    public OpenAPI openAPI(@Value("OpenAPI") String appVersion) {
-        Server prodServer = new Server().url("https://dev.catchmind.shop").description("운영 서버");
+    public OpenAPI openAPI(@Value("OpenAPI") String appVersion, SecurityConfig securityConfig) {
+        Server prodServer = new Server().url("https://" + securityConfig.getBackEndUrl()).description("운영 서버");
         Server localServer = new Server().url("http://localhost:8080").description("로컬 서버");
         Info info = new Info().title("CatchMind API").version(appVersion)
                 .description("CatchMind API 입니다.")
-                .termsOfService("https://dev.catchmind.shop")
+                .termsOfService("https://" + securityConfig.getBackEndUrl())
                 .contact(new Contact().name("CatchMind").email("sketchersMJU@gmail.com"))
                 .license(new License().name("Apache License Version 2.0")
                         .url("http://www.apache.org/licenses/LICENSE-2.0"));
