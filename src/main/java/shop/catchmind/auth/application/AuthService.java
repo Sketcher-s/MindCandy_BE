@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import shop.catchmind.auth.dto.request.IsExistedEmailRequest;
 import shop.catchmind.auth.dto.request.SignUpRequest;
 import shop.catchmind.auth.dto.response.IsExistedEmailResponse;
 import shop.catchmind.member.domain.Member;
@@ -23,9 +22,9 @@ public class AuthService {
         memberRepository.save(member);
     }
 
-    public IsExistedEmailResponse isExistedEmail(IsExistedEmailRequest request) {
+    public IsExistedEmailResponse isExistedEmail(String email) {
         return IsExistedEmailResponse.builder()
-                .isExisted(memberRepository.existsByEmail(request.email()))
+                .isExisted(memberRepository.existsByEmail(email))
                 .build();
 
     }
