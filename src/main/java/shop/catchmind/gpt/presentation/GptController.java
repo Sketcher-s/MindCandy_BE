@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import shop.catchmind.gpt.application.GptService;
-import shop.catchmind.gpt.dto.InterpretDto;
+import shop.catchmind.gpt.dto.NaturalLanguageDto;
 
 @Hidden
 @RequiredArgsConstructor
@@ -19,7 +19,7 @@ public class GptController {
     private final GptService gptService;
 
     @PostMapping
-    public ResponseEntity<?> interpretPicture(@RequestBody final InterpretDto dto) {
+    public ResponseEntity<?> interpretPicture(@RequestBody final NaturalLanguageDto dto) {
         return ResponseEntity.ok(gptService.interpretPicture(dto));
     }
 }
