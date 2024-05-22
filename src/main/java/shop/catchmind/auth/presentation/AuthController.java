@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.catchmind.auth.application.AuthService;
-import shop.catchmind.auth.dto.request.IsExistedEmailRequest;
 import shop.catchmind.auth.dto.request.SignUpRequest;
 import shop.catchmind.auth.dto.response.IsExistedEmailResponse;
 
@@ -36,7 +35,7 @@ public class AuthController {
         return ResponseEntity.ok(null);
     }
 
-    @GetMapping("/email")
+    @GetMapping("/{email}")
     @Operation(
             summary = "이메일 중복 검사",
             description = "이메일을 받아 중복 여부를 검사합니다."
@@ -46,8 +45,8 @@ public class AuthController {
                     " isExisted = false의 경우, 동일한 이메일이 없습니다.")
     })
     public ResponseEntity<IsExistedEmailResponse> isValidEmail(
-            @RequestBody @Valid final IsExistedEmailRequest request
+            @PathVariable final String email
     ) {
-        return ResponseEntity.ok(authService.isExistedEmail(request));
+        return ResponseEntity.ok(authService.isExistedEmail(email));
     }
 }
