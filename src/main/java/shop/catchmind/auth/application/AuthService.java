@@ -22,7 +22,7 @@ public class AuthService {
         memberRepository.save(member);
     }
 
-    public IsExistedEmailResponse isExistedEmail(String email) {
+    public IsExistedEmailResponse isExistedEmail(final String email) {
         return IsExistedEmailResponse.builder()
                 .isExisted(memberRepository.existsByEmail(email))
                 .build();

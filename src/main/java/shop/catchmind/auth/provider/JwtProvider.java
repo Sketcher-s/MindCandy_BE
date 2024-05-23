@@ -33,12 +33,12 @@ public class JwtProvider {
 
     private final MemberRepository memberRepository;
 
-    public String createAccessToken(final String email) {
+    public String createAccessToken(final Long userId) {
         Date now = new Date();
         return JWT.create()
                 .withSubject(ACCESS_TOKEN_SUBJECT)
                 .withExpiresAt(new Date(now.getTime() + accessTokenExpirationPeriod))
-                .withClaim(ID_CLAIM, email)
+                .withClaim(ID_CLAIM, userId)
                 .sign(Algorithm.HMAC512(secretKey));
     }
 

@@ -26,7 +26,7 @@ public class Picture extends AuditingField {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "result")
+    @Column(name = "result", length = 3000)
     private String result;
 
     public void updateTitle(final String title) {
