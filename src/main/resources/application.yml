@@ -15,6 +15,10 @@ spring:
     hikari:
       data-source-properties:
         rewriteBatchedStatements: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
   jpa:
     defer-datasource-initialization: true
     show-sql: true
