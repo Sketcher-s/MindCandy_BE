@@ -1,6 +1,8 @@
 package shop.catchmind.picture.application;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -33,7 +35,8 @@ public class PictureService {
     private final S3Provider s3Provider;
     private final RestTemplate restTemplate;
 
-    private static final String flaskServerUrl = "http://localhost:5000/predict";
+    @Value("${url.ai}")
+    private String flaskServerUrl;
 
     public InterpretResponse inspect(final Long authId, final MultipartFile file) {
         String imageUrl = s3Provider.uploadFile(s3Provider.generateFilesKeyName(), file);
@@ -57,11 +60,16 @@ public class PictureService {
                 Picture.builder()
                         .title("이름을 지어주세요.")
                         .imageUrl(imageUrl)
-                        .result(result.data())
+                        .result(removeNumbersInParentheses(result.data()))
                         .memberId(authId)
                         .build()
         );
 
         return InterpretResponse.of(PictureDto.of(picture));
+    }
+
+    // 정규 표현식을 사용하여 "(숫자)" 패턴을 제거
+    private String removeNumbersInParentheses(String input) {
+        return input.replaceAll("\\(\\d+\\)", "");
     }
 }
