@@ -50,8 +50,8 @@ public class JwtProvider {
     public Optional<String> extractAccessToken(final HttpServletRequest request) {
         log.info("extractAccessToken 진입: {}, accessHeader: {}", request.getHeader(accessHeader), accessHeader);
         return Optional.ofNullable(request.getHeader(accessHeader))
-                .filter(accessToken -> accessToken.startsWith(BEARER_CLAIM))
-                .map(accessToken -> accessToken.replace(BEARER_CLAIM, ""));
+                .filter(accessToken -> accessToken.startsWith(BEARER_CLAIM + " "))
+                .map(accessToken -> accessToken.replace(BEARER_CLAIM + " ", ""));
     }
 
     private void setAccessTokenHeader(final HttpServletResponse response, final String accessToken) {

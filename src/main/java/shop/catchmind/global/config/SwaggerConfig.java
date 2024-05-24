@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static shop.catchmind.auth.constant.AuthProcessingConstant.*;
+import static shop.catchmind.auth.constant.JwtConstant.BEARER_CLAIM;
 
 @Configuration
 @RequiredArgsConstructor
@@ -57,7 +58,7 @@ public class SwaggerConfig {
                                         new SecurityScheme()
                                                 .name(securitySchemeName)
                                                 .type(SecurityScheme.Type.HTTP)
-                                                .scheme("bearer")
+                                                .scheme(BEARER_CLAIM)
                                                 .bearerFormat("JWT")
                                 )
                 )
