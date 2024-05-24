@@ -33,12 +33,12 @@ public class JwtProvider {
 
     private final MemberRepository memberRepository;
 
-    public String createAccessToken(final String email) {
+    public String createAccessToken(final Long userId) {
         Date now = new Date();
         return JWT.create()
                 .withSubject(ACCESS_TOKEN_SUBJECT)
                 .withExpiresAt(new Date(now.getTime() + accessTokenExpirationPeriod))
-                .withClaim(ID_CLAIM, email)
+                .withClaim(ID_CLAIM, userId)
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
@@ -48,9 +48,10 @@ public class JwtProvider {
     }
 
     public Optional<String> extractAccessToken(final HttpServletRequest request) {
+        log.info("extractAccessToken 진입: {}, accessHeader: {}", request.getHeader(accessHeader), accessHeader);
         return Optional.ofNullable(request.getHeader(accessHeader))
-                .filter(accessToken -> accessToken.startsWith(BEARER_CLAIM))
-                .map(accessToken -> accessToken.replace(BEARER_CLAIM, ""));
+                .filter(accessToken -> accessToken.startsWith(BEARER_CLAIM + " "))
+                .map(accessToken -> accessToken.replace(BEARER_CLAIM + " ", ""));
     }
 
     private void setAccessTokenHeader(final HttpServletResponse response, final String accessToken) {

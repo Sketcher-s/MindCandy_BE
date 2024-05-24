@@ -15,6 +15,7 @@ import shop.catchmind.gpt.constant.GptConstant;
 import shop.catchmind.gpt.dto.GptMessage;
 import shop.catchmind.gpt.dto.GptResponse;
 import shop.catchmind.gpt.dto.InterpretDto;
+import shop.catchmind.gpt.dto.NaturalLanguageDto;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +31,7 @@ public class GptService {
     @Value(value = "${GPT_API_KEY}")
     private String apiKey;
 
-    public InterpretDto interpretPicture(final InterpretDto dto) {
+    public InterpretDto interpretPicture(final NaturalLanguageDto dto) {
         List<GptMessage> messages = createGptMessages(dto);
         log.info("Request Messages: {}", messages);
 
@@ -45,7 +46,7 @@ public class GptService {
     }
 
     // GPT 에 요청할 메시지를 만드는 메서드
-    private static List<GptMessage> createGptMessages(final InterpretDto dto) {
+    private static List<GptMessage> createGptMessages(final NaturalLanguageDto dto) {
         List<GptMessage> messages = new ArrayList<>();
 
         // gpt 역할(프롬프트) 설정
@@ -57,7 +58,7 @@ public class GptService {
         // 실제 요청
         messages.add(GptMessage.builder()
                 .role(GptConstant.USER)
-                .content(dto.data())
+                .content(dto.value())
                 .build());
         return messages;
     }

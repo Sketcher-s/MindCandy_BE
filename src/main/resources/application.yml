@@ -95,6 +95,7 @@ springdoc:
 url:
   be: ${BE_URL}
   fe: ${FE_URL}
+  ai: ${AI_URL}
 
 ---
 ### Local Config

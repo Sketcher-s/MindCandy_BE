@@ -6,8 +6,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import shop.catchmind.auth.dto.AuthenticationDto;
 import shop.catchmind.auth.provider.JwtProvider;
 import shop.catchmind.member.domain.Member;
 import shop.catchmind.member.repository.MemberRepository;
@@ -23,12 +23,12 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException, ServletException {
-        String email = extractEmail(authentication);
-        String accessToken = jwtProvider.createAccessToken(email);
+        Long userId = extractId(authentication);
+        String accessToken = jwtProvider.createAccessToken(userId);
 
         jwtProvider.sendAccessToken(response, accessToken);
 
-        Member member = memberRepository.findByEmail(email).orElseThrow(RuntimeException::new);     // TODO: Exception 구현 필요
+        Member member = memberRepository.findById(userId).orElseThrow(RuntimeException::new);     // TODO: Exception 구현 필요
 
         memberRepository.saveAndFlush(member);
 
@@ -37,8 +37,8 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         response.setContentType("application/json");
     }
 
-    private String extractEmail(final Authentication authentication) {
-        UserDetails auth = (UserDetails) authentication.getPrincipal();
-        return auth.getUsername();
+    private Long extractId(final Authentication authentication) {
+        AuthenticationDto auth = (AuthenticationDto) authentication.getPrincipal();
+        return auth.id();
     }
 }
