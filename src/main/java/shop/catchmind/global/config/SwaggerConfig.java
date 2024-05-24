@@ -37,7 +37,6 @@ import static shop.catchmind.auth.constant.JwtConstant.BEARER_CLAIM;
 public class SwaggerConfig {
 
     private final ApplicationContext applicationContext;
-    private final String securitySchemeName = "bearerAuth";
 
     @Bean
     public OpenAPI openAPI(@Value("OpenAPI") String appVersion, SecurityConfig securityConfig) {
@@ -50,6 +49,7 @@ public class SwaggerConfig {
                 .license(new License().name("Apache License Version 2.0")
                         .url("http://www.apache.org/licenses/LICENSE-2.0"));
 
+        String securitySchemeName = "bearerAuth";
         return new OpenAPI()
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(
@@ -79,7 +79,6 @@ public class SwaggerConfig {
                                 .map(CustomJsonAuthenticationFilter.class::cast)
                                 .findAny();
                 if (optionalFilter.isPresent()) {
-                    CustomJsonAuthenticationFilter filter = optionalFilter.get();
                     Operation operation = new Operation();
                     Schema<?> schema = new ObjectSchema()
                             .addProperty(USERNAME_KEY, new StringSchema())
