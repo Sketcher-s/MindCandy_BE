@@ -9,5 +9,5 @@ public interface PictureRepository extends JpaRepository<Picture, Long> {
 
     void deleteAllByMemberId(Long memberId);
 
-    Page<Picture> findByMemberId(Long memberId, Pageable pageable);
+    Page<Picture> findAllByMemberId(Long memberId, Pageable pageable);
 }
