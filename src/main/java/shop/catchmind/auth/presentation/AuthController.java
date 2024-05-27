@@ -20,7 +20,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/sign-up")
     @Operation(
             summary = "회원가입",
             description = "이름, 이메일, 비밀번호를 받아 회원가입을 진행합니다."
@@ -28,6 +27,7 @@ public class AuthController {
     @ApiResponses(value={
             @ApiResponse(responseCode = "200", description = "회원가입 성공입니다.")
     })
+    @PostMapping("/sign-up")
     public ResponseEntity<Object> signUp(
             @RequestBody @Valid final SignUpRequest request
     ) {
@@ -35,7 +35,6 @@ public class AuthController {
         return ResponseEntity.ok(null);
     }
 
-    @GetMapping("/{email}")
     @Operation(
             summary = "이메일 중복 검사",
             description = "이메일을 받아 중복 여부를 검사합니다."
@@ -44,6 +43,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "isExisted = true의 경우, 중복 이메일이 존재합니다." +
                     " isExisted = false의 경우, 동일한 이메일이 없습니다.")
     })
+    @GetMapping("/{email}")
     public ResponseEntity<IsExistedEmailResponse> isValidEmail(
             @PathVariable final String email
     ) {
