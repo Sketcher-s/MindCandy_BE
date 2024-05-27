@@ -21,7 +21,9 @@ import shop.catchmind.picture.domain.Picture;
 import shop.catchmind.picture.dto.PictureDto;
 import shop.catchmind.picture.dto.request.UpdateTitleRequest;
 import shop.catchmind.picture.dto.response.InterpretResponse;
-import shop.catchmind.picture.dto.response.PictureResponse;
+import shop.catchmind.picture.dto.response.GetPictureResponse;
+import shop.catchmind.picture.exception.PictureNotFoundException;
+import shop.catchmind.picture.exception.UnmatchedMemberPictureException;
 import shop.catchmind.picture.repository.PictureRepository;
 
 import java.io.IOException;
@@ -70,19 +72,19 @@ public class PictureService {
         return InterpretResponse.of(PictureDto.of(picture));
     }
 
-    public PictureResponse getPicture(final Long authId, final Long pictureId) {
+    public GetPictureResponse getPicture(final Long authId, final Long pictureId) {
         Picture picture = pictureRepository.findById(pictureId)
-                .orElseThrow(RuntimeException::new);    // TODO: Exception 처리 필요
+                .orElseThrow(PictureNotFoundException::new);
 
         isOwnerOfPicture(authId, picture);
 
-        return PictureResponse.of(PictureDto.of(picture));
+        return GetPictureResponse.of(PictureDto.of(picture));
     }
 
     @Transactional
     public void updateTitle(final Long authId, final UpdateTitleRequest request) {
         Picture picture = pictureRepository.findById(request.id())
-                .orElseThrow(RuntimeException::new);// TODO: Exception 처리 필요
+                .orElseThrow(PictureNotFoundException::new);
 
         isOwnerOfPicture(authId, picture);
 
@@ -97,7 +99,7 @@ public class PictureService {
     // 요청한 ID를 가진 그림 검사 결과가 요청한 유저의 검사인지 확인하는 메서드
     private void isOwnerOfPicture(final Long authId, final Picture picture) {
         if (!picture.getMemberId().equals(authId)) {
-            throw new RuntimeException(); // TODO: Exception 처리 필요
+            throw new UnmatchedMemberPictureException();
         }
     }
 
