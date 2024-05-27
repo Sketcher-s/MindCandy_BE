@@ -38,7 +38,7 @@ public class Picture extends AuditingField {
     }
 
     @Builder
-    public Picture(Long memberId, String title, String imageUrl, String result) {
+    public Picture(final Long memberId, final String title, final String imageUrl, final String result) {
         this.memberId = memberId;
         this.title = title;
         this.imageUrl = imageUrl;
