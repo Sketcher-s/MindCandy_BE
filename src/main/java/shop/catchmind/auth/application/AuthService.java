@@ -10,19 +10,19 @@ import shop.catchmind.member.domain.Member;
 import shop.catchmind.member.repository.MemberRepository;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AuthService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public void signUp(final SignUpRequest request) {
         Member member = request.toMember(passwordEncoder);
         memberRepository.save(member);
     }
 
-    @Transactional(readOnly = true)
     public IsExistedEmailResponse isExistedEmail(final String email) {
         return IsExistedEmailResponse.builder()
                 .isExisted(memberRepository.existsByEmail(email))

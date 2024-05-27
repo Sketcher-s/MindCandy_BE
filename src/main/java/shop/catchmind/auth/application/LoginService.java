@@ -11,7 +11,7 @@ import shop.catchmind.member.domain.Member;
 import shop.catchmind.member.repository.MemberRepository;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class LoginService implements UserDetailsService {
 
