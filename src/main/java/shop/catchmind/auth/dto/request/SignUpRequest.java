@@ -16,7 +16,7 @@ public record SignUpRequest(
         String name,
 
         @NotBlank(message = EMAIL_NOT_BLANK)
-        @Email(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$\n", message = EMAIL_EMAIL_FORM)
+        @Email(message = EMAIL_EMAIL_FORM)
         String email,
 
         @Size(min = 8, max = 12, message = PASSWORD_SIZE)
