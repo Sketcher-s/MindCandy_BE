@@ -22,10 +22,10 @@ public class AuthService {
         memberRepository.save(member);
     }
 
+    @Transactional(readOnly = true)
     public IsExistedEmailResponse isExistedEmail(final String email) {
         return IsExistedEmailResponse.builder()
                 .isExisted(memberRepository.existsByEmail(email))
                 .build();
-
     }
 }
