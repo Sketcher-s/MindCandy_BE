@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import shop.catchmind.auth.dto.AuthenticationDto;
 import shop.catchmind.picture.application.PictureService;
+import shop.catchmind.picture.dto.request.UpdateTitleRequest;
 import shop.catchmind.picture.dto.response.InterpretResponse;
 import shop.catchmind.picture.dto.response.PictureResponse;
 
@@ -43,7 +44,7 @@ public class PictureController {
             description = "요청한 ID의 그림 검사 결과의 상세 정보를 조회합니다."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "분석이 완료되었습니다.")
+            @ApiResponse(responseCode = "200", description = "그림 검사 결과 상세 정보 조회에 성공했습니다.")
     })
     @GetMapping("/{pictureId}")
     public ResponseEntity<PictureResponse> getPicture(
@@ -52,4 +53,21 @@ public class PictureController {
     ) {
         return ResponseEntity.ok(pictureService.getPicture(auth.id(), pictureId));
     }
+
+    @Operation(
+            summary = "그림 검사 제목 수정",
+            description = "요청한 ID의 그림 검사 결과의 제목을 수정합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "그림 검사 결과의 제목 수정에 성공했습니다.")
+    })
+    @PatchMapping("/title")
+    public ResponseEntity<?> updateTitle(
+            @AuthenticationPrincipal final AuthenticationDto auth,
+            @RequestBody final UpdateTitleRequest request
+    ) {
+        pictureService.updateTitle(auth.id(), request);
+        return ResponseEntity.ok().build();
+    }
+
 }

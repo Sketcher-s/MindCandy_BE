@@ -19,6 +19,7 @@ import shop.catchmind.gpt.dto.InterpretDto;
 import shop.catchmind.gpt.dto.NaturalLanguageDto;
 import shop.catchmind.picture.domain.Picture;
 import shop.catchmind.picture.dto.PictureDto;
+import shop.catchmind.picture.dto.request.UpdateTitleRequest;
 import shop.catchmind.picture.dto.response.InterpretResponse;
 import shop.catchmind.picture.dto.response.PictureResponse;
 import shop.catchmind.picture.repository.PictureRepository;
@@ -26,7 +27,7 @@ import shop.catchmind.picture.repository.PictureRepository;
 import java.io.IOException;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class PictureService {
 
@@ -38,6 +39,7 @@ public class PictureService {
     @Value("${url.ai}")
     private String flaskServerUrl;
 
+    @Transactional
     public InterpretResponse inspect(final Long authId, final MultipartFile file) {
         String imageUrl = s3Provider.uploadFile(s3Provider.generateFilesKeyName(), file);
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
@@ -68,20 +70,35 @@ public class PictureService {
         return InterpretResponse.of(PictureDto.of(picture));
     }
 
-    @Transactional(readOnly = true)
     public PictureResponse getPicture(final Long authId, final Long pictureId) {
         Picture picture = pictureRepository.findById(pictureId)
                 .orElseThrow(RuntimeException::new);    // TODO: Exception 처리 필요
 
-        if (!picture.getMemberId().equals(authId)) {
-            throw new RuntimeException(); // TODO: Exception 처리 필요
-        }
+        isOwnerOfPicture(authId, picture);
 
         return PictureResponse.of(PictureDto.of(picture));
+    }
+
+    @Transactional
+    public void updateTitle(final Long authId, final UpdateTitleRequest request) {
+        Picture picture = pictureRepository.findById(request.id())
+                .orElseThrow(RuntimeException::new);// TODO: Exception 처리 필요
+
+        isOwnerOfPicture(authId, picture);
+
+        picture.updateTitle(request.title());
     }
 
     // 정규 표현식을 사용하여 "(숫자)" 패턴을 제거
     private String removeNumbersInParentheses(final String input) {
         return input.replaceAll("\\(\\d+\\)", "");
     }
+
+    // 요청한 ID를 가진 그림 검사 결과가 요청한 유저의 검사인지 확인하는 메서드
+    private void isOwnerOfPicture(final Long authId, final Picture picture) {
+        if (!picture.getMemberId().equals(authId)) {
+            throw new RuntimeException(); // TODO: Exception 처리 필요
+        }
+    }
+
 }
