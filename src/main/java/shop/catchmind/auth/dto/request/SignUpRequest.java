@@ -7,19 +7,21 @@ import jakarta.validation.constraints.Size;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import shop.catchmind.member.domain.Member;
 
+import static shop.catchmind.auth.constant.AuthErrorConstant.*;
+
 public record SignUpRequest(
 
-        @Size(min = 2, max = 6)
-        @NotBlank
+        @Size(min = 2, max = 6, message = NAME_SIZE)
+        @NotBlank(message = NAME_NOT_BLANK)
         String name,
 
-        @NotBlank
-        @Email
+        @NotBlank(message = EMAIL_NOT_BLANK)
+        @Email(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$\n", message = EMAIL_EMAIL_FORM)
         String email,
 
-        @Size(min = 8, max = 12)
-        @NotBlank
-        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,12}$")
+        @Size(min = 8, max = 12, message = PASSWORD_SIZE)
+        @NotBlank(message = PASSWORD_NOT_BLANK)
+        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,12}$", message = PASSWORD_PATTERN)
         String password
 ) {
 

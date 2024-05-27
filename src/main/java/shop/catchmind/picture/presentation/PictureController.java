@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import shop.catchmind.auth.dto.AuthenticationDto;
 import shop.catchmind.picture.application.PictureService;
 import shop.catchmind.picture.dto.request.UpdateTitleRequest;
 import shop.catchmind.picture.dto.response.InterpretResponse;
-import shop.catchmind.picture.dto.response.PictureResponse;
+import shop.catchmind.picture.dto.response.GetPictureResponse;
 
 @Tag(name = "Picture API", description = "그림 검사 관련 API")
 @RestController
@@ -47,7 +48,7 @@ public class PictureController {
             @ApiResponse(responseCode = "200", description = "그림 검사 결과 상세 정보 조회에 성공했습니다.")
     })
     @GetMapping("/{pictureId}")
-    public ResponseEntity<PictureResponse> getPicture(
+    public ResponseEntity<GetPictureResponse> getPicture(
             @AuthenticationPrincipal final AuthenticationDto auth,
             @PathVariable final Long pictureId
     ) {
@@ -64,7 +65,7 @@ public class PictureController {
     @PatchMapping("/title")
     public ResponseEntity<?> updateTitle(
             @AuthenticationPrincipal final AuthenticationDto auth,
-            @RequestBody final UpdateTitleRequest request
+            @RequestBody @Valid final UpdateTitleRequest request
     ) {
         pictureService.updateTitle(auth.id(), request);
         return ResponseEntity.ok().build();
