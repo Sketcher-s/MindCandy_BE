@@ -4,12 +4,12 @@ import lombok.Builder;
 import shop.catchmind.picture.dto.PictureDto;
 
 @Builder
-public record PictureResponse(
+public record GetPictureResponse(
         PictureDto pictureDto
 ) {
 
-    public static PictureResponse of(PictureDto pictureDto) {
-        return PictureResponse.builder()
+    public static GetPictureResponse of(PictureDto pictureDto) {
+        return GetPictureResponse.builder()
                 .pictureDto(pictureDto)
                 .build();
     }
