@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.catchmind.auth.dto.AuthenticationDto;
 import shop.catchmind.member.domain.Member;
+import shop.catchmind.member.exception.InvalidUserException;
 import shop.catchmind.member.repository.MemberRepository;
 
 @Service
@@ -20,7 +21,7 @@ public class LoginService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(RuntimeException::new);// TODO: Exception 처리 필요
+                .orElseThrow(InvalidUserException::new);
 
         return AuthenticationDto.builder()
                 .id(member.getId())
