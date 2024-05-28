@@ -25,7 +25,8 @@ public class AuthController {
             description = "이름, 이메일, 비밀번호를 받아 회원가입을 진행합니다."
     )
     @ApiResponses(value={
-            @ApiResponse(responseCode = "200", description = "회원가입 성공입니다.")
+            @ApiResponse(responseCode = "200", description = "회원가입 성공입니다."),
+            @ApiResponse(responseCode = "400", description = "회원가입 실패입니다.")
     })
     @PostMapping("/sign-up")
     public ResponseEntity<Object> signUp(
@@ -41,7 +42,8 @@ public class AuthController {
     )
     @ApiResponses(value={
             @ApiResponse(responseCode = "200", description = "isExisted = true의 경우, 중복 이메일이 존재합니다." +
-                    " isExisted = false의 경우, 동일한 이메일이 없습니다.")
+                    " isExisted = false의 경우, 동일한 이메일이 없습니다."),
+            @ApiResponse(responseCode = "400", description = "이메일 중복 검사에 실패했습니다.")
     })
     @GetMapping("/{email}")
     public ResponseEntity<IsExistedEmailResponse> isValidEmail(
