@@ -27,6 +27,7 @@ import shop.catchmind.picture.exception.UnmatchedMemberPictureException;
 import shop.catchmind.picture.repository.PictureRepository;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -57,6 +58,9 @@ public class PictureService {
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(flaskServerUrl, requestEntity, String.class);
+        if (Objects.equals(response.getBody(), " ")) {
+            return null;
+        }
 
         InterpretDto result = gptService.interpretPicture(NaturalLanguageDto.of(response.getBody()));
 
