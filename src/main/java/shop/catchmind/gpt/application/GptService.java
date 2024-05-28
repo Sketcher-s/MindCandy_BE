@@ -3,15 +3,10 @@ package shop.catchmind.gpt.application;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import shop.catchmind.gpt.constant.GptConstant;
 import shop.catchmind.gpt.dto.GptMessage;
 import shop.catchmind.gpt.dto.GptResponse;
 import shop.catchmind.gpt.dto.InterpretDto;
@@ -20,6 +15,8 @@ import shop.catchmind.gpt.dto.NaturalLanguageDto;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static shop.catchmind.gpt.constant.GptConstant.*;
 
 @Service
 @RequiredArgsConstructor
@@ -51,13 +48,13 @@ public class GptService {
 
         // gpt 역할(프롬프트) 설정
         messages.add(GptMessage.builder()
-                .role(GptConstant.SYSTEM)
-                .content(GptConstant.PROMPT)
+                .role(SYSTEM)
+                .content(PROMPT)
                 .build());
 
         // 실제 요청
         messages.add(GptMessage.builder()
-                .role(GptConstant.USER)
+                .role(USER)
                 .content(dto.value())
                 .build());
         return messages;
@@ -66,10 +63,10 @@ public class GptService {
     // GPT 에 요청할 파라미터를 만드는 메서드
     private static HashMap<String, Object> createRequestBody(final List<GptMessage> messages) {
         HashMap<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model", GptConstant.CHAT_MODEL);
+        requestBody.put("model", CHAT_MODEL);
         requestBody.put("messages", messages);
-        requestBody.put("max_tokens", GptConstant.MAX_TOKEN);
-        requestBody.put("temperature", GptConstant.TEMPERATURE);
+        requestBody.put("max_tokens", MAX_TOKEN);
+        requestBody.put("temperature", TEMPERATURE);
         return requestBody;
     }
 
@@ -77,8 +74,8 @@ public class GptService {
     public HttpEntity<HashMap<String, Object>> createHttpEntity(final HashMap<String, Object> chatGptRequest){
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.parseMediaType(GptConstant.MEDIA_TYPE));
-        httpHeaders.add(GptConstant.AUTHORIZATION, GptConstant.BEARER + apiKey);
+        httpHeaders.setContentType(MediaType.parseMediaType(MEDIA_TYPE));
+        httpHeaders.add(AUTHORIZATION, BEARER + apiKey);
         return new HttpEntity<>(chatGptRequest, httpHeaders);
     }
 
@@ -92,7 +89,7 @@ public class GptService {
 
         restTemplate.setRequestFactory(requestFactory);
         ResponseEntity<GptResponse> responseEntity = restTemplate.exchange(
-                GptConstant.CHAT_URL,
+                CHAT_URL,
                 HttpMethod.POST,
                 httpEntity,
                 GptResponse.class);
