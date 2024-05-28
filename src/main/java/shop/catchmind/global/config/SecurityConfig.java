@@ -64,10 +64,10 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(authorize ->
-                                authorize
-                                        .anyRequest().permitAll()
-//                                        .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**",
-//                                                "/health", "/health/**").permitAll()
+                        authorize
+                                .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**",
+                                        "/health", "/health/**").permitAll()
+                                .anyRequest().authenticated()
                 )
                 .addFilterAfter(customJsonAuthenticationFilter(), LogoutFilter.class)
                 .addFilterBefore(jwtAuthProcessingFilter(), CustomJsonAuthenticationFilter.class);
