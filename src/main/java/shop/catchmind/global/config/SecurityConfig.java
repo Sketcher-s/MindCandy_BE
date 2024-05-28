@@ -51,6 +51,9 @@ public class SecurityConfig {
     @Value("${url.fe}")
     private String frontEndUrl;
 
+    @Value("${jwt.access.header}")
+    private String accessHeader;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -119,7 +122,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:8080", frontEndUrl, backEndUrl, "https://main--sketchersmju.netlify.app"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setExposedHeaders(List.of("Authorization"));
+        configuration.setExposedHeaders(List.of(accessHeader));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
