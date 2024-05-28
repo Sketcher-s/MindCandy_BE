@@ -10,9 +10,13 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import shop.catchmind.auth.dto.AuthenticationDto;
 import shop.catchmind.auth.provider.JwtProvider;
 import shop.catchmind.member.domain.Member;
+import shop.catchmind.member.exception.InvalidUserException;
 import shop.catchmind.member.repository.MemberRepository;
 
 import java.io.IOException;
+
+import static shop.catchmind.auth.constant.AuthProcessingConstant.CHARACTER_ENCODING;
+import static shop.catchmind.auth.constant.AuthProcessingConstant.CONTENT_TYPE;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,13 +32,13 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         jwtProvider.sendAccessToken(response, accessToken);
 
-        Member member = memberRepository.findById(userId).orElseThrow(RuntimeException::new);     // TODO: Exception 구현 필요
+        Member member = memberRepository.findById(userId).orElseThrow(InvalidUserException::new);
 
         memberRepository.saveAndFlush(member);
 
         response.setStatus(HttpServletResponse.SC_OK);
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json");
+        response.setCharacterEncoding(CHARACTER_ENCODING);
+        response.setContentType(CONTENT_TYPE);
     }
 
     private Long extractId(final Authentication authentication) {

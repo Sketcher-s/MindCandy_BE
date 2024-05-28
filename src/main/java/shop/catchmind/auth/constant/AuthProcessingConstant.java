@@ -8,6 +8,7 @@ public final class AuthProcessingConstant {
     public static final String DEFAULT_LOGIN_REQUEST_URL = "/auth/login";
     public static final String HTTP_METHOD = "POST";
     public static final String CONTENT_TYPE = "application/json";
+    public static final String CHARACTER_ENCODING = "UTF-8";
     public static final String USERNAME_KEY = "email";
     public static final String PASSWORD_KEY = "password";
 
