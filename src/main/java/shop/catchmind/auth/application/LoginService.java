@@ -23,10 +23,6 @@ public class LoginService implements UserDetailsService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(InvalidUserException::new);
 
-        return AuthenticationDto.builder()
-                .id(member.getId())
-                .email(member.getEmail())
-                .password(member.getPassword())
-                .build();
+        return AuthenticationDto.of(member);
     }
 }
