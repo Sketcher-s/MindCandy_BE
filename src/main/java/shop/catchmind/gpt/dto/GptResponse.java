@@ -1,45 +1,33 @@
 package shop.catchmind.gpt.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-public class GptResponse {
-    private String id;
+public record GptResponse(
+        String id,
+        String object,
+        long created,
+        String model,
+        Usage usage,
+        List<Choice> choices
+) {
 
-    private String object;
-
-    private long created;
-
-    private String model;
-
-    private Usage usage;
-
-    private List<Choice> choices;
-
-    @Getter
-    @Setter
-    public static class Usage {
-        @JsonProperty("prompt_tokens")
-        private int promptTokens;
-        @JsonProperty("completion_tokens")
-        private int completionTokens;
-        @JsonProperty("total_tokens")
-        private int totalTokens;
+    public record Usage(
+            @JsonProperty("prompt_tokens")
+            int promptTokens,
+            @JsonProperty("completion_tokens")
+            int completionTokens,
+            @JsonProperty("total_tokens")
+            int totalTokens
+    ) {
     }
 
-    @Getter
-    @Setter
-    public static class Choice {
-        private GptMessage message;
-        @JsonProperty("finish_reason")
-        private String finishReason;
-        private int index;
+    public record Choice(
+            GptMessage message,
+            @JsonProperty("finish_reason")
+            String finishReason,
+            int index
+    ) {
     }
 }

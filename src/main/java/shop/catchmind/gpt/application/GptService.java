@@ -36,7 +36,7 @@ public class GptService {
 
         GptResponse chatGptRes = getResponse(createHttpEntity(requestBody));
 
-        String response = chatGptRes.getChoices().get(0).getMessage().content();
+        String response = chatGptRes.choices().get(0).message().content();
         log.info("Response: {}", response);
 
         return InterpretDto.builder().data(response).build();
