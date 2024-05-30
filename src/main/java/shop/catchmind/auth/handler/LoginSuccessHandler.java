@@ -1,6 +1,5 @@
 package shop.catchmind.auth.handler;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +12,7 @@ import shop.catchmind.member.domain.Member;
 import shop.catchmind.member.exception.InvalidUserException;
 import shop.catchmind.member.repository.MemberRepository;
 
-import java.io.IOException;
-
-import static shop.catchmind.auth.constant.AuthProcessingConstant.CHARACTER_ENCODING;
-import static shop.catchmind.auth.constant.AuthProcessingConstant.CONTENT_TYPE;
+import static shop.catchmind.auth.constant.AuthProcessingConstant.*;
 
 @Slf4j
 @RequiredArgsConstructor
