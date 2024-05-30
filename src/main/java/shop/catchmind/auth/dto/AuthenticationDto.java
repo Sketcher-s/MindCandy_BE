@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import shop.catchmind.auth.Role;
+import shop.catchmind.member.domain.Member;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -27,6 +28,14 @@ public record AuthenticationDto(
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toUnmodifiableSet());
         }
+    }
+
+    public static AuthenticationDto of(Member member) {
+        return AuthenticationDto.builder()
+                .id(member.getId())
+                .email(member.getEmail())
+                .password(member.getPassword())
+                .build();
     }
 
 

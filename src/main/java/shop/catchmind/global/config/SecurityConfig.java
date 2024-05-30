@@ -51,6 +51,9 @@ public class SecurityConfig {
     @Value("${url.fe}")
     private String frontEndUrl;
 
+    @Value("${jwt.access.header}")
+    private String accessHeader;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -64,10 +67,10 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(authorize ->
-                                authorize
-                                        .anyRequest().permitAll()
-//                                        .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**",
-//                                                "/health", "/health/**").permitAll()
+                        authorize
+                                .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**",
+                                        "/health", "/health/**", "/auth/**").permitAll()
+                                .anyRequest().authenticated()
                 )
                 .addFilterAfter(customJsonAuthenticationFilter(), LogoutFilter.class)
                 .addFilterBefore(jwtAuthProcessingFilter(), CustomJsonAuthenticationFilter.class);
@@ -119,7 +122,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:8080", frontEndUrl, backEndUrl, "https://main--sketchersmju.netlify.app"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setExposedHeaders(List.of("Authorization"));
+        configuration.setExposedHeaders(List.of(accessHeader));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 

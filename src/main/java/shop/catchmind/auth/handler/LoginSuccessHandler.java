@@ -1,6 +1,5 @@
 package shop.catchmind.auth.handler;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +9,10 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import shop.catchmind.auth.dto.AuthenticationDto;
 import shop.catchmind.auth.provider.JwtProvider;
 import shop.catchmind.member.domain.Member;
+import shop.catchmind.member.exception.InvalidUserException;
 import shop.catchmind.member.repository.MemberRepository;
 
-import java.io.IOException;
+import static shop.catchmind.auth.constant.AuthProcessingConstant.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,19 +22,19 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final MemberRepository memberRepository;
 
     @Override
-    public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) {
         Long userId = extractId(authentication);
         String accessToken = jwtProvider.createAccessToken(userId);
 
         jwtProvider.sendAccessToken(response, accessToken);
 
-        Member member = memberRepository.findById(userId).orElseThrow(RuntimeException::new);     // TODO: Exception 구현 필요
+        Member member = memberRepository.findById(userId).orElseThrow(InvalidUserException::new);
 
         memberRepository.saveAndFlush(member);
 
         response.setStatus(HttpServletResponse.SC_OK);
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json");
+        response.setCharacterEncoding(CHARACTER_ENCODING);
+        response.setContentType(CONTENT_TYPE);
     }
 
     private Long extractId(final Authentication authentication) {
