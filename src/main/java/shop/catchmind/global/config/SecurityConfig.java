@@ -69,7 +69,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**",
-                                        "/health", "/health/**").permitAll()
+                                        "/health", "/health/**", "/auth/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .addFilterAfter(customJsonAuthenticationFilter(), LogoutFilter.class)
