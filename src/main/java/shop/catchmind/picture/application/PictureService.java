@@ -95,9 +95,9 @@ public class PictureService {
         picture.updateTitle(request.title());
     }
 
-    // 정규 표현식을 사용하여 "(숫자)" 패턴을 제거
+    // 정규 표현식을 사용하여 "(숫자, 문자)" 패턴을 제거
     private String removeNumbersInParentheses(final String input) {
-        return input.replaceAll("\\(\\d+\\)", "");
+        return input.replaceAll("\\(.*?\\)", "");
     }
 
     // 요청한 ID를 가진 그림 검사 결과가 요청한 유저의 검사인지 확인하는 메서드
