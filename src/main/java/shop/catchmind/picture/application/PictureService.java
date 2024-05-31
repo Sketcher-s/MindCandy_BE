@@ -66,7 +66,6 @@ public class PictureService {
 
         Picture picture = pictureRepository.save(
                 Picture.builder()
-                        .title("이름을 지어주세요.")
                         .imageUrl(imageUrl)
                         .result(removeNumbersInParentheses(result.data()))
                         .memberId(authId)
