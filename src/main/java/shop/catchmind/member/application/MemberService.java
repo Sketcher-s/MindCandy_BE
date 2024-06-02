@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.catchmind.member.domain.Member;
@@ -42,7 +43,8 @@ public class MemberService {
         SimpleMemberDto simpleMemberDto = SimpleMemberDto.of(memberDto);
 
         // 그림 목록 조회 (페이지네이션 적용)
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
         Page<Picture> picturePage = pictureRepository.findAllByMemberId(memberId, pageable);
         List<SimplePictureDto> simplePictureDtoList = picturePage.stream()
                 .map(PictureDto::of)
