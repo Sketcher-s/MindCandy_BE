@@ -29,6 +29,10 @@ public class Picture extends AuditingField {
     @Column(name = "result", length = 3000)
     private String result;
 
+    @Column(name = "picture_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PictureType pictureType;
+
     public void updateTitle(final String title) {
         this.title = title;
     }
