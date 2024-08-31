@@ -45,29 +45,13 @@ public class PictureService {
     @Transactional
     public InterpretResponse inspect(final Long authId, final MultipartFile file) {
         String imageUrl = s3Provider.uploadFile(s3Provider.generateFilesKeyName(), file);
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 
-        try {
-            body.add("file", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(flaskServerUrl, requestEntity, String.class);
-        if (Objects.equals(response.getBody(), " ")) {
-            return null;
-        }
-
-        InterpretDto result = gptService.interpretPicture(NaturalLanguageDto.of(response.getBody()));
+        InterpretDto result = serveToFlask(file);
 
         Picture picture = pictureRepository.save(
                 Picture.builder()
                         .imageUrl(imageUrl)
-                        .result(removeNumbersInParentheses(result.data()))
+                        .result(removeNumbersInParentheses(Objects.requireNonNull(result).data()))
                         .memberId(authId)
                         .build()
         );
@@ -92,6 +76,28 @@ public class PictureService {
         isOwnerOfPicture(authId, picture);
 
         picture.updateTitle(request.title());
+    }
+
+    // Flask 서버 통신
+    private InterpretDto serveToFlask(MultipartFile file) {
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+
+        try {
+            body.add("file", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(flaskServerUrl, requestEntity, String.class);
+        if (Objects.equals(response.getBody(), " ")) {
+            return null;
+        }
+
+        return gptService.interpretPicture(NaturalLanguageDto.of(response.getBody()));
     }
 
     // 정규 표현식을 사용하여 "(숫자, 문자)" 패턴을 제거
