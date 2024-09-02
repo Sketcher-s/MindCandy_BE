@@ -13,9 +13,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import shop.catchmind.auth.dto.AuthenticationDto;
 import shop.catchmind.picture.application.PictureService;
+import shop.catchmind.picture.dto.PictureRequestDto;
+import shop.catchmind.picture.dto.request.RecognizeRequest;
 import shop.catchmind.picture.dto.request.UpdateTitleRequest;
-import shop.catchmind.picture.dto.response.InterpretResponse;
 import shop.catchmind.picture.dto.response.GetPictureResponse;
+import shop.catchmind.picture.dto.response.InterpretResponse;
+import shop.catchmind.picture.dto.response.RecognitionResultResponse;
+
+import java.util.List;
 
 @Tag(name = "Picture API", description = "그림 검사 관련 API")
 @RestController
@@ -26,33 +31,48 @@ public class PictureController {
     private final PictureService pictureService;
 
     @Operation(
+            summary = "그림 객체 인식",
+            description = "요청받은 이미지에 대한 객체 인식을 진행하여, 자연어 처리된 결과를 도출합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "객체 인식이 완료되었습니다.")
+    })
+    @PostMapping(value = "/recognition", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<RecognitionResultResponse> recognizeObject(
+            @RequestPart(value = "file") final MultipartFile image,
+            @RequestPart(value = "pictureType") final RecognizeRequest recognizeRequest
+    ) {
+        return ResponseEntity.ok(pictureService.recognizeObject(image, recognizeRequest));
+    }
+
+    @Operation(
             summary = "그림 검사",
             description = "요청받은 이미지에 대한 심리 분석 결과를 제공합니다."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "분석이 완료되었습니다.")
     })
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/analysis",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<InterpretResponse> inspectPicture(
             @AuthenticationPrincipal final AuthenticationDto auth,
-            @RequestPart(value = "file") final MultipartFile image
+            @RequestPart(value = "pictureRequestList") final List<PictureRequestDto> pictureRequestDtoList
     ) {
-        return ResponseEntity.ok(pictureService.inspect(auth.id(), image));
+        return ResponseEntity.ok(pictureService.inspect(auth.id(), pictureRequestDtoList));
     }
 
     @Operation(
-            summary = "그림 검사 상세 조회",
+            summary = "그림 검사 결과 상세 조회",
             description = "요청한 ID의 그림 검사 결과의 상세 정보를 조회합니다."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "그림 검사 결과 상세 정보 조회에 성공했습니다.")
     })
-    @GetMapping("/{pictureId}")
+    @GetMapping("/{resultId}")
     public ResponseEntity<GetPictureResponse> getPicture(
             @AuthenticationPrincipal final AuthenticationDto auth,
-            @PathVariable final Long pictureId
+            @PathVariable final Long resultId
     ) {
-        return ResponseEntity.ok(pictureService.getPicture(auth.id(), pictureId));
+        return ResponseEntity.ok(pictureService.getResult(auth.id(), resultId));
     }
 
     @Operation(

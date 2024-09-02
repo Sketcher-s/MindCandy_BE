@@ -1,13 +1,11 @@
 package shop.catchmind.picture.repository;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import shop.catchmind.picture.domain.Picture;
 
+import java.util.List;
+
 public interface PictureRepository extends JpaRepository<Picture, Long> {
-
-    void deleteAllByMemberId(Long memberId);
-
-    Page<Picture> findAllByMemberId(Long memberId, Pageable pageable);
+    List<Picture> findAllByResultId(Long resultId);
+    void deleteAllByResultId(Long resultId);
 }

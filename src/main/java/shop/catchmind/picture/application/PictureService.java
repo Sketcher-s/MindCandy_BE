@@ -18,16 +18,25 @@ import shop.catchmind.gpt.application.GptService;
 import shop.catchmind.gpt.dto.InterpretDto;
 import shop.catchmind.gpt.dto.NaturalLanguageDto;
 import shop.catchmind.picture.domain.Picture;
+import shop.catchmind.picture.domain.PictureType;
+import shop.catchmind.picture.domain.Result;
 import shop.catchmind.picture.dto.PictureDto;
+import shop.catchmind.picture.dto.PictureRequestDto;
+import shop.catchmind.picture.dto.request.RecognizeRequest;
 import shop.catchmind.picture.dto.request.UpdateTitleRequest;
-import shop.catchmind.picture.dto.response.InterpretResponse;
 import shop.catchmind.picture.dto.response.GetPictureResponse;
-import shop.catchmind.picture.exception.PictureNotFoundException;
-import shop.catchmind.picture.exception.UnmatchedMemberPictureException;
+import shop.catchmind.picture.dto.response.InterpretResponse;
+import shop.catchmind.picture.dto.response.RecognitionResultResponse;
+import shop.catchmind.picture.exception.ResultNotFoundException;
+import shop.catchmind.picture.exception.UnmatchedMemberResultException;
 import shop.catchmind.picture.repository.PictureRepository;
+import shop.catchmind.picture.repository.ResultRepository;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
+
+import static shop.catchmind.picture.constant.FlaskConstant.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -38,52 +47,69 @@ public class PictureService {
     private final GptService gptService;
     private final S3Provider s3Provider;
     private final RestTemplate restTemplate;
+    private final ResultRepository resultRepository;
 
     @Value("${url.ai}")
     private String flaskServerUrl;
 
     @Transactional
-    public InterpretResponse inspect(final Long authId, final MultipartFile file) {
-        String imageUrl = s3Provider.uploadFile(s3Provider.generateFilesKeyName(), file);
-
-        InterpretDto result = serveToFlask(file);
-
-        Picture picture = pictureRepository.save(
-                Picture.builder()
-                        .imageUrl(imageUrl)
-                        .result(removeNumbersInParentheses(Objects.requireNonNull(result).data()))
-                        .memberId(authId)
-                        .build()
-        );
-
-        return InterpretResponse.of(PictureDto.of(picture));
+    public RecognitionResultResponse recognizeObject(final MultipartFile file, final RecognizeRequest request) {
+        NaturalLanguageDto result = serveToFlask(file, request);
+        return RecognitionResultResponse.of(request.pictureType(), result.value());
     }
 
-    public GetPictureResponse getPicture(final Long authId, final Long pictureId) {
-        Picture picture = pictureRepository.findById(pictureId)
-                .orElseThrow(PictureNotFoundException::new);
+    @Transactional
+    public InterpretResponse inspect(final Long authId, final List<PictureRequestDto> request) {
+        Result result = resultRepository.save(Result.builder()
+                .memberId(authId)
+                .build());
 
-        isOwnerOfPicture(authId, picture);
+        List<Picture> pictureList = request.stream()
+                .map(pictureRequestDto -> {
+                    String imageUrl = s3Provider.uploadFile(s3Provider.generateFilesKeyName(), pictureRequestDto.image());
+                    if (pictureRequestDto.pictureType() == PictureType.TREE) {
+                        result.updateReplaceImageUrl(imageUrl);
+                    }
+                    InterpretDto interpretDto = gptService.interpretPicture(NaturalLanguageDto.of(pictureRequestDto.value()));  // TODO: 그림 별 모델 파라미터 추가 적용 필요
+                    Picture picture = pictureRepository.save(Picture.builder()
+                            .imageUrl(imageUrl)
+                            .content(removeNumbersInParentheses(interpretDto.data()))
+                            .pictureType(pictureRequestDto.pictureType())
+                            .build());
+                    picture.setResult(result);
+                    return picture;
+                }).toList();
 
-        return GetPictureResponse.of(PictureDto.of(picture));
+        List<PictureDto> pictureDtoList = pictureList.stream().map(PictureDto::of).toList();
+
+//        result.updateContent(gptService.interpretGeneral(pictureDtoList).getData()); // TODO: GptService 종합 도출 프롬프팅 설계 필요
+
+        return InterpretResponse.of(pictureList, result);
+    }
+
+    public GetPictureResponse getResult(final Long authId, final Long resultId) {
+        Result result = resultRepository.findById(resultId)
+                .orElseThrow(ResultNotFoundException::new);
+        isOwnerOfResult(authId, result);
+        List<Picture> pictureList = pictureRepository.findAllByResultId(resultId);
+        return GetPictureResponse.of(pictureList, result);
     }
 
     @Transactional
     public void updateTitle(final Long authId, final UpdateTitleRequest request) {
-        Picture picture = pictureRepository.findById(request.id())
-                .orElseThrow(PictureNotFoundException::new);
-
-        isOwnerOfPicture(authId, picture);
-
-        picture.updateTitle(request.title());
+        Result result = resultRepository.findById(request.resultId())
+                .orElseThrow(ResultNotFoundException::new);
+        isOwnerOfResult(authId, result);
+        result.updateTitle(request.title());
     }
 
     // Flask 서버 통신
-    private InterpretDto serveToFlask(MultipartFile file) {
+    private NaturalLanguageDto serveToFlask(final MultipartFile file, final RecognizeRequest request) {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 
         try {
-            body.add("file", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
+            body.add(FILE_REQUEST, new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
+            body.add(MODEL_TYPE_REQUEST, request.pictureType());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -94,21 +120,21 @@ public class PictureService {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(flaskServerUrl, requestEntity, String.class);
         if (Objects.equals(response.getBody(), " ")) {
-            return null;
+            throw new RuntimeException("객체 인식에 오류가 있습니다.");
         }
 
-        return gptService.interpretPicture(NaturalLanguageDto.of(response.getBody()));
+        return NaturalLanguageDto.of(response.getBody());
     }
 
     // 정규 표현식을 사용하여 "(숫자, 문자)" 패턴을 제거
     private String removeNumbersInParentheses(final String input) {
-        return input.replaceAll("\\(.*?\\)", "");
+        return input.replaceAll(NUMBER_CHARACTER_PATTERN, "");
     }
 
-    // 요청한 ID를 가진 그림 검사 결과가 요청한 유저의 검사인지 확인하는 메서드
-    private void isOwnerOfPicture(final Long authId, final Picture picture) {
-        if (!picture.getMemberId().equals(authId)) {
-            throw new UnmatchedMemberPictureException();
+    // 요청한 ID를 가진 그림 검사 결과가 요청한 유저의 결과인지 확인하는 메서드
+    private void isOwnerOfResult(final Long authId, final Result result) {
+        if (!result.getMemberId().equals(authId)) {
+            throw new UnmatchedMemberResultException();
         }
     }
 
