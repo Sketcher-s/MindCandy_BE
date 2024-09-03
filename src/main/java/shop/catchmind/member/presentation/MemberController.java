@@ -16,7 +16,7 @@ import shop.catchmind.auth.dto.AuthenticationDto;
 import shop.catchmind.member.application.MemberService;
 import shop.catchmind.member.dto.GetPictureListResponse;
 
-@Tag(name = "Member", description = "Member API")
+@Tag(name = "Member API", description = "사용자 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/member")

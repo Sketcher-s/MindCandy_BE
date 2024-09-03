@@ -1,16 +1,25 @@
 package shop.catchmind.picture.dto.response;
 
 import lombok.Builder;
+import shop.catchmind.picture.domain.Picture;
+import shop.catchmind.picture.domain.Result;
 import shop.catchmind.picture.dto.PictureDto;
+import shop.catchmind.picture.dto.ResultDto;
+
+import java.util.List;
 
 @Builder
 public record GetPictureResponse(
-        PictureDto pictureDto
+        List<PictureDto> pictureList,
+        ResultDto result
 ) {
 
-    public static GetPictureResponse of(PictureDto pictureDto) {
+    public static GetPictureResponse of(final List<Picture> pictureList, final Result result) {
         return GetPictureResponse.builder()
-                .pictureDto(pictureDto)
+                .pictureList(pictureList.stream()
+                        .map(PictureDto::of)
+                        .toList())
+                .result(ResultDto.from(result))
                 .build();
     }
 }

@@ -2,26 +2,19 @@ package shop.catchmind.picture.dto;
 
 import lombok.Builder;
 import shop.catchmind.picture.domain.Picture;
-
-import java.time.LocalDateTime;
+import shop.catchmind.picture.domain.PictureType;
 
 @Builder
 public record PictureDto(
-        Long id,
-        Long memberId,
-        String title,
         String imageUrl,
-        String result,
-        LocalDateTime createdAt
+        String content,
+        PictureType pictureType
 ) {
-    public static PictureDto of(Picture picture) {
+    public static PictureDto of(final Picture picture) {
         return PictureDto.builder()
-                .id(picture.getId())
-                .memberId(picture.getMemberId())
-                .title(picture.getTitle())
                 .imageUrl(picture.getImageUrl())
-                .result(picture.getResult())
-                .createdAt(picture.getCreatedAt())
+                .content(picture.getContent())
+                .pictureType(picture.getPictureType())
                 .build();
     }
 }
