@@ -13,14 +13,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import shop.catchmind.auth.dto.AuthenticationDto;
 import shop.catchmind.picture.application.PictureService;
-import shop.catchmind.picture.dto.PictureRequestDto;
+import shop.catchmind.picture.dto.request.InspectRequest;
 import shop.catchmind.picture.dto.request.RecognizeRequest;
 import shop.catchmind.picture.dto.request.UpdateTitleRequest;
 import shop.catchmind.picture.dto.response.GetPictureResponse;
 import shop.catchmind.picture.dto.response.InterpretResponse;
 import shop.catchmind.picture.dto.response.RecognitionResultResponse;
-
-import java.util.List;
 
 @Tag(name = "Picture API", description = "그림 검사 관련 API")
 @RestController
@@ -55,9 +53,9 @@ public class PictureController {
     @PostMapping(value = "/analysis",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<InterpretResponse> inspectPicture(
             @AuthenticationPrincipal final AuthenticationDto auth,
-            @RequestPart(value = "pictureRequestList") final List<PictureRequestDto> pictureRequestDtoList
+            @RequestPart(value = "inspectRequest") final InspectRequest inspectRequest
     ) {
-        return ResponseEntity.ok(pictureService.inspect(auth.id(), pictureRequestDtoList));
+        return ResponseEntity.ok(pictureService.inspect(auth.id(), inspectRequest));
     }
 
     @Operation(
