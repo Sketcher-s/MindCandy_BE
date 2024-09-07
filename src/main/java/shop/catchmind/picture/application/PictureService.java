@@ -21,7 +21,7 @@ import shop.catchmind.picture.domain.Picture;
 import shop.catchmind.picture.domain.PictureType;
 import shop.catchmind.picture.domain.Result;
 import shop.catchmind.picture.dto.PictureDto;
-import shop.catchmind.picture.dto.PictureRequestDto;
+import shop.catchmind.picture.dto.request.InspectRequest;
 import shop.catchmind.picture.dto.request.RecognizeRequest;
 import shop.catchmind.picture.dto.request.UpdateTitleRequest;
 import shop.catchmind.picture.dto.response.GetPictureResponse;
@@ -59,12 +59,12 @@ public class PictureService {
     }
 
     @Transactional
-    public InterpretResponse inspect(final Long authId, final List<PictureRequestDto> request) {
+    public InterpretResponse inspect(final Long authId, final InspectRequest request) {
         Result result = resultRepository.save(Result.builder()
                 .memberId(authId)
                 .build());
 
-        List<Picture> pictureList = request.stream()
+        List<Picture> pictureList = request.pictureRequestDtoList().stream()
                 .map(pictureRequestDto -> {
                     String imageUrl = s3Provider.uploadFile(s3Provider.generateFilesKeyName(), pictureRequestDto.image());
                     if (pictureRequestDto.pictureType() == PictureType.TREE) {
