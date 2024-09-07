@@ -33,10 +33,14 @@ public class Member extends AuditingField {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
     @Builder
-    public Member(final String name, final String email, final String password) {
+    public Member(final String name, final String email, final String password, final String refreshToken) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.refreshToken = refreshToken;
     }
 }
