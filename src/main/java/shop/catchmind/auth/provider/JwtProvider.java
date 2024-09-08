@@ -1,7 +1,9 @@
 package shop.catchmind.auth.provider;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
@@ -81,4 +83,19 @@ public class JwtProvider {
         }
     }
 
+    public long getRemainingExpirationTime(String accessToken) {
+        Algorithm algorithm = Algorithm.HMAC512(secretKey);
+
+        JWTVerifier verifier = JWT.require(algorithm)
+                .build();
+
+        DecodedJWT decodedJWT = verifier.verify(accessToken);
+
+        Date expiration = decodedJWT.getExpiresAt();
+        Date now = new Date();
+
+        long remainingTimeInMillis = expiration.getTime() - now.getTime();
+
+        return remainingTimeInMillis / 1000;
+    }
 }

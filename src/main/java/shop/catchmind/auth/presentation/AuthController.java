@@ -6,11 +6,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.catchmind.auth.application.AuthService;
 import shop.catchmind.auth.dto.request.SignUpRequest;
 import shop.catchmind.auth.dto.response.IsExistedEmailResponse;
+
+import java.util.Objects;
 
 @Tag(name = "Auth API", description = "인증/인가 관련 API")
 @RestController
@@ -33,6 +36,22 @@ public class AuthController {
             @RequestBody @Valid final SignUpRequest request
     ) {
         authService.signUp(request);
+        return ResponseEntity.ok(null);
+    }
+
+    @Operation(
+            summary = "로그아웃",
+            description = "로그아웃을 진행합니다."
+    )
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공입니다."),
+            @ApiResponse(responseCode = "400", description = "로그아웃 실패입니다.")
+    })
+    @PostMapping("/logout")
+    public ResponseEntity<Object> logout(
+            @RequestHeader @Valid final HttpHeaders header
+            ) {
+        authService.logout(Objects.requireNonNull(header.getFirst("Authorization")));
         return ResponseEntity.ok(null);
     }
 
