@@ -13,6 +13,7 @@ import shop.catchmind.member.domain.Member;
 import shop.catchmind.member.repository.MemberRepository;
 
 import java.util.concurrent.TimeUnit;
+import static shop.catchmind.auth.constant.JwtConstant.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -42,6 +43,6 @@ public class AuthService {
 
         long remainingExpirationTime = jwtProvider.getRemainingExpirationTime(accessToken);
 
-        stringValueOperations.set("logout", accessToken, remainingExpirationTime, TimeUnit.SECONDS);
+        stringValueOperations.set(REDIS_LOGOUT_KEY, accessToken, remainingExpirationTime, TimeUnit.SECONDS);
     }
 }
