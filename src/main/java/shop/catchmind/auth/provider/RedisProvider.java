@@ -17,4 +17,9 @@ public class RedisProvider {
     public void registerBlackList(final String accessToken, final Long remainingExpirationTime) {
         redisTemplate.opsForValue().set(REDIS_LOGOUT_KEY, accessToken, remainingExpirationTime, TimeUnit.SECONDS);
     }
+
+    public boolean isTokenBlacklisted(final String accessToken) {
+        return Boolean.TRUE.equals(redisTemplate.hasKey(REDIS_LOGOUT_KEY + accessToken));
+    }
+
 }
