@@ -9,10 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.catchmind.auth.dto.request.SignUpRequest;
 import shop.catchmind.auth.dto.response.IsExistedEmailResponse;
 import shop.catchmind.auth.provider.JwtProvider;
+import shop.catchmind.auth.provider.RedisProvider;
 import shop.catchmind.member.domain.Member;
 import shop.catchmind.member.repository.MemberRepository;
 
 import java.util.concurrent.TimeUnit;
+
 import static shop.catchmind.auth.constant.JwtConstant.*;
 
 @Service
@@ -22,7 +24,7 @@ public class AuthService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RedisTemplate redisTemplate;
+    private final RedisProvider redisProvider;
     private final JwtProvider jwtProvider;
 
     @Transactional
@@ -38,11 +40,8 @@ public class AuthService {
     }
 
     public void logout(final String bearerToken) {
-        String accessToken = bearerToken.substring(7);
-        ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
-
-        long remainingExpirationTime = jwtProvider.getRemainingExpirationTime(accessToken);
-
-        stringValueOperations.set(REDIS_LOGOUT_KEY, accessToken, remainingExpirationTime, TimeUnit.SECONDS);
+        String accessToken = bearerToken.substring(BEARER_CLAIM.length());
+        Long remainingExpirationTime = jwtProvider.getRemainingExpirationTime(accessToken);
+        redisProvider.registerBlackList(bearerToken.substring(BEARER_CLAIM.length()), remainingExpirationTime);
     }
 }

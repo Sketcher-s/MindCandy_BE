@@ -83,7 +83,7 @@ public class JwtProvider {
         }
     }
 
-    public long getRemainingExpirationTime(String accessToken) {
+    public Long getRemainingExpirationTime(final String accessToken) {
         Algorithm algorithm = Algorithm.HMAC512(secretKey);
 
         JWTVerifier verifier = JWT.require(algorithm)
