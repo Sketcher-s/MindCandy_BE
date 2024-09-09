@@ -29,6 +29,7 @@ import shop.catchmind.auth.filter.JwtAuthProcessingFilter;
 import shop.catchmind.auth.handler.LoginFailureHandler;
 import shop.catchmind.auth.handler.LoginSuccessHandler;
 import shop.catchmind.auth.provider.JwtProvider;
+import shop.catchmind.auth.provider.RedisProvider;
 import shop.catchmind.member.repository.MemberRepository;
 
 import java.util.Arrays;
@@ -41,7 +42,8 @@ import java.util.List;
 public class SecurityConfig {
 
     private final LoginService loginService;
-    private final JwtProvider jwtDriver;
+    private final RedisProvider redisProvider;
+    private final JwtProvider jwtProvider;
     private final MemberRepository memberRepository;
     private final ObjectMapper objectMapper;
 
@@ -94,7 +96,7 @@ public class SecurityConfig {
 
     @Bean
     public LoginSuccessHandler loginSuccessHandler() {
-        return new LoginSuccessHandler(jwtDriver, memberRepository);
+        return new LoginSuccessHandler(jwtProvider, memberRepository);
     }
 
     @Bean
@@ -113,7 +115,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthProcessingFilter jwtAuthProcessingFilter() {
-        return new JwtAuthProcessingFilter(jwtDriver, memberRepository);
+        return new JwtAuthProcessingFilter(jwtProvider, redisProvider, memberRepository);
     }
 
     @Bean
