@@ -15,6 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import shop.catchmind.auth.Role;
 import shop.catchmind.auth.dto.AuthenticationDto;
 import shop.catchmind.auth.provider.JwtProvider;
+import shop.catchmind.auth.provider.RedisProvider;
 import shop.catchmind.member.domain.Member;
 import shop.catchmind.member.repository.MemberRepository;
 
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 public class JwtAuthProcessingFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
+    private final RedisProvider redisProvider;
     private final MemberRepository memberRepository;
 
     private final GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
@@ -38,6 +40,7 @@ public class JwtAuthProcessingFilter extends OncePerRequestFilter {
     private void checkAccessTokenAndAuthentication(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain) throws ServletException, IOException {
         jwtProvider.extractAccessToken(request)
                 .filter(jwtProvider::isTokenValid)
+                .filter(redisProvider::isTokenBlacklisted)
                 .flatMap(accessToken -> jwtProvider.extractId(accessToken)
                         .flatMap(memberRepository::findById)).ifPresent(this::saveAuthentication);
 

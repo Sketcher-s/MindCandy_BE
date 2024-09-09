@@ -109,7 +109,7 @@ public class PictureService {
 
         try {
             body.add(FILE_REQUEST, new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
-            body.add(MODEL_TYPE_REQUEST, request.pictureType());
+            body.add(MODEL_TYPE_REQUEST, request.pictureType().getType());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
