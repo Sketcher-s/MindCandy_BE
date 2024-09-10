@@ -18,8 +18,8 @@ public class RedisProvider {
         redisTemplate.opsForValue().set(REDIS_LOGOUT_KEY, accessToken, remainingExpirationTime, TimeUnit.SECONDS);
     }
 
-    public boolean isTokenBlacklisted(final String accessToken) {
-        return Boolean.TRUE.equals(redisTemplate.hasKey(REDIS_LOGOUT_KEY + accessToken));
+    public boolean isNotTokenBlacklisted(final String accessToken) {
+        return Boolean.FALSE.equals(redisTemplate.hasKey(REDIS_LOGOUT_KEY + accessToken));
     }
 
 }
