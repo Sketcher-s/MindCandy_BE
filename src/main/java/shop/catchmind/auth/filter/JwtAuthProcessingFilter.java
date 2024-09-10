@@ -40,7 +40,7 @@ public class JwtAuthProcessingFilter extends OncePerRequestFilter {
     private void checkAccessTokenAndAuthentication(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain) throws ServletException, IOException {
         jwtProvider.extractAccessToken(request)
                 .filter(jwtProvider::isTokenValid)
-                .filter(redisProvider::isTokenBlacklisted)
+                .filter(redisProvider::isNotTokenBlacklisted)
                 .flatMap(accessToken -> jwtProvider.extractId(accessToken)
                         .flatMap(memberRepository::findById)).ifPresent(this::saveAuthentication);
 

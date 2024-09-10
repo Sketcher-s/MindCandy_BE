@@ -41,5 +41,6 @@ public class CustomJsonAuthenticationFilter extends AbstractAuthenticationProces
 
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(userId, userPassword);
 
-        return this.getAuthenticationManager().authenticate(authRequest);    }
+        return this.getAuthenticationManager().authenticate(authRequest);
+    }
 }
