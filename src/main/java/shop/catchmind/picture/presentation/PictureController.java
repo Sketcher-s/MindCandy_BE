@@ -20,6 +20,8 @@ import shop.catchmind.picture.dto.response.GetPictureResponse;
 import shop.catchmind.picture.dto.response.InterpretResponse;
 import shop.catchmind.picture.dto.response.RecognitionResultResponse;
 
+import java.util.List;
+
 @Tag(name = "Picture API", description = "그림 검사 관련 API")
 @RestController
 @RequestMapping("/api/picture")
@@ -44,8 +46,9 @@ public class PictureController {
     }
 
     @Operation(
-            summary = "그림 검사",
-            description = "요청받은 이미지에 대한 심리 분석 결과를 제공합니다."
+            summary = "그림 분석",
+            description = "요청받은 이미지에 대한 심리 분석 결과를 제공합니다. " +
+                    "/n(반드시 이미지, 이미지에 대한 정보의 순서를 매칭해서 보내주세요!!)"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "분석이 완료되었습니다.")
@@ -53,9 +56,10 @@ public class PictureController {
     @PostMapping(value = "/analysis",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<InterpretResponse> inspectPicture(
             @AuthenticationPrincipal final AuthenticationDto auth,
+            @RequestPart(value = "fileList") final List<MultipartFile> imageList,
             @RequestPart(value = "inspectRequest") final InspectRequest inspectRequest
     ) {
-        return ResponseEntity.ok(pictureService.inspect(auth.id(), inspectRequest));
+        return ResponseEntity.ok(pictureService.inspect(auth.id(), imageList, inspectRequest));
     }
 
     @Operation(
