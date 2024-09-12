@@ -9,7 +9,9 @@ public enum PictureType {
     HOUSE("house"),
     TREE("tree"),
     MALE("male"),
-    FEMALE("female");
+    FEMALE("female"),
+    GENERAL("general")
+    ;
 
     private final String type;
 }

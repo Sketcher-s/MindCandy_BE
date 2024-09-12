@@ -35,6 +35,7 @@ import shop.catchmind.picture.repository.ResultRepository;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 import static shop.catchmind.picture.constant.FlaskConstant.*;
 
@@ -59,30 +60,57 @@ public class PictureService {
     }
 
     @Transactional
-    public InterpretResponse inspect(final Long authId, final InspectRequest request) {
+    public InterpretResponse inspect(final Long authId, final List<MultipartFile> imageList, final InspectRequest request) {
         Result result = resultRepository.save(Result.builder()
                 .memberId(authId)
                 .build());
 
-        List<Picture> pictureList = request.pictureRequestDtoList().stream()
-                .map(pictureRequestDto -> {
-                    String imageUrl = s3Provider.uploadFile(s3Provider.generateFilesKeyName(), pictureRequestDto.image());
-                    if (pictureRequestDto.pictureType() == PictureType.TREE) {
+        // 두 리스트의 크기가 같은지 확인
+        if (imageList.size() != request.pictureRequestDtoList().size()) {
+            throw new IllegalArgumentException("이미지 리스트와 PictureRequestDto 리스트의 크기가 다릅니다.");
+        }
+
+        StringBuilder generalQuestionBuilder = new StringBuilder();
+
+        List<Picture> pictureList = IntStream.range(0, imageList.size())
+                .mapToObj(index -> {
+                    MultipartFile image = imageList.get(index);
+                    PictureType pictureType = request.pictureRequestDtoList().get(index).pictureType();
+                    String value = request.pictureRequestDtoList().get(index).value();
+
+                    // S3에 이미지 업로드 및 URL 획득
+                    String imageUrl = s3Provider.uploadFile(s3Provider.generateFilesKeyName(), image);
+
+                    // TREE 유형의 경우, 이미지 URL 업데이트
+                    if (pictureType == PictureType.TREE) {
                         result.updateReplaceImageUrl(imageUrl);
                     }
-                    InterpretDto interpretDto = gptService.interpretPicture(NaturalLanguageDto.of(pictureRequestDto.value()));  // TODO: 그림 별 모델 파라미터 추가 적용 필요
+
+                    // GPT 서비스로부터 해석 결과 받기
+                    InterpretDto interpretDto = gptService.interpretPicture(NaturalLanguageDto.of(value), pictureType);
+                    String interpretedContent = removeNumbersInParentheses(interpretDto.data());
+
+                    // Picture 객체 생성 및 저장
                     Picture picture = pictureRepository.save(Picture.builder()
                             .imageUrl(imageUrl)
-                            .content(removeNumbersInParentheses(interpretDto.data()))
-                            .pictureType(pictureRequestDto.pictureType())
+                            .content(interpretedContent)
+                            .pictureType(pictureType)
                             .build());
                     picture.setResult(result);
+
+                    // generalQuestionBuilder에 각 Picture의 콘텐츠를 추가
+                    generalQuestionBuilder.append(interpretedContent);
+
                     return picture;
                 }).toList();
 
         List<PictureDto> pictureDtoList = pictureList.stream().map(PictureDto::of).toList();
 
-//        result.updateContent(gptService.interpretGeneral(pictureDtoList).getData()); // TODO: GptService 종합 도출 프롬프팅 설계 필요
+
+        result.updateContent(
+                gptService.interpretPicture(
+                        NaturalLanguageDto.of(generalQuestionBuilder.toString()), PictureType.GENERAL).data()
+        );
 
         return InterpretResponse.of(pictureList, result);
     }
