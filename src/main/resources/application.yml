@@ -107,7 +107,7 @@ url:
 
 ---
 ### Local Config
-spring:
+spring:π
   config:
     activate:
       on-profile: local
@@ -123,4 +123,4 @@ spring:
       on-profile: dev
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
