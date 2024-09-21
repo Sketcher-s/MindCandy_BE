@@ -48,7 +48,7 @@ public class PictureController {
     @Operation(
             summary = "그림 분석",
             description = "요청받은 이미지에 대한 심리 분석 결과를 제공합니다. " +
-                    "/n(반드시 이미지, 이미지에 대한 정보의 순서를 매칭해서 보내주세요!!)"
+                    "\n(반드시 이미지, 이미지에 대한 정보의 순서를 매칭해서 보내주세요!!)"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "분석이 완료되었습니다.")
