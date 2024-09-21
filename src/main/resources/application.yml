@@ -123,4 +123,4 @@ spring:
       on-profile: dev
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
