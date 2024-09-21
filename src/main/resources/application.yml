@@ -107,7 +107,7 @@ url:
 
 ---
 ### Local Config
-spring:π
+spring:
   config:
     activate:
       on-profile: local
