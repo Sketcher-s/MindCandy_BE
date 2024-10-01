@@ -99,7 +99,10 @@ public class PictureService {
                     picture.setResult(result);
 
                     // generalQuestionBuilder에 각 Picture의 콘텐츠를 추가
-                    generalQuestionBuilder.append(interpretedContent);
+//                    generalQuestionBuilder.append(interpretedContent);
+                    // -> 종합해석에 자연어 값을 넘김.
+                    generalQuestionBuilder.append("[" + pictureType + "]");
+                    generalQuestionBuilder.append(NaturalLanguageDto.of(value));
 
                     return picture;
                 }).toList();
