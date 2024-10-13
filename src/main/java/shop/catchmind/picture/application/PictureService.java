@@ -150,9 +150,9 @@ public class PictureService {
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(flaskServerUrl, requestEntity, String.class);
-        if (Objects.equals(response.getBody(), " ")) {
-            throw new RuntimeException("객체 인식에 오류가 있습니다.");
-        }
+//        if (Objects.equals(response.getBody(), " ")) {
+//            throw new RuntimeException("객체 인식에 오류가 있습니다.");
+//        }
 
         return NaturalLanguageDto.of(response.getBody());
     }
