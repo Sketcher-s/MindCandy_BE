@@ -87,7 +87,7 @@ public class PictureService {
                     }
 
                     // GPT 서비스로부터 해석 결과 받기
-                    InterpretDto interpretDto = gptService.interpretPicture(NaturalLanguageDto.of(value), pictureType, image);
+                    InterpretDto interpretDto = gptService.interpretPicture(NaturalLanguageDto.of(value), pictureType, imageUrl);
                     String interpretedContent = removeNumbersInParentheses(interpretDto.data());
 
                     // Picture 객체 생성 및 저장
