@@ -6,13 +6,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+import shop.catchmind.global.s3.MultipartInputStreamFileResource;
 import shop.catchmind.gpt.dto.GptMessage;
 import shop.catchmind.gpt.dto.GptResponse;
 import shop.catchmind.gpt.dto.InterpretDto;
 import shop.catchmind.gpt.dto.NaturalLanguageDto;
 import shop.catchmind.picture.domain.PictureType;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,13 +34,13 @@ public class GptService {
     @Value(value = "${GPT_API_KEY}")
     private String apiKey;
 
-    public InterpretDto interpretPicture(final NaturalLanguageDto dto, final PictureType pictureType) {
+    public InterpretDto interpretPicture(final NaturalLanguageDto dto, final PictureType pictureType, final MultipartFile file) {
         List<GptMessage> messages = createGptMessages(dto, pictureType);
         log.info("Request Messages: {}", messages);
 
         HashMap<String, Object> requestBody = createRequestBody(messages);
 
-        GptResponse chatGptRes = getResponse(createHttpEntity(requestBody));
+        GptResponse chatGptRes = getResponse(createHttpEntity(requestBody, file));
 
         String response = chatGptRes.choices().get(0).message().content();
         log.info("Response: {}", response);
@@ -74,16 +79,25 @@ public class GptService {
     }
 
     // api 호출에 필요한 Http Header를 만들고 HTTP 객체를 만드는 메서드
-    public HttpEntity<HashMap<String, Object>> createHttpEntity(final HashMap<String, Object> chatGptRequest) {
+    public HttpEntity<MultiValueMap<String, Object>> createHttpEntity(final HashMap<String, Object> chatGptRequest, final MultipartFile file) {
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.parseMediaType(MEDIA_TYPE));
+        httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
         httpHeaders.add(AUTHORIZATION, BEARER + apiKey);
-        return new HttpEntity<>(chatGptRequest, httpHeaders);
+
+        // 파일을 MultiValueMap에 담아서 전송
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("request", chatGptRequest);
+        try {
+            body.add("file", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read the file", e);
+        }
+        return new HttpEntity<>(body, httpHeaders);
     }
 
     // GPT API 요청후 response body를 받아오는 메서드
-    public GptResponse getResponse(final HttpEntity<HashMap<String, Object>> httpEntity) {
+    public GptResponse getResponse(final HttpEntity<MultiValueMap<String, Object>> httpEntity) {
 
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         // 답변이 길어질 경우 TimeOut Error 발생하므로 time 설정
