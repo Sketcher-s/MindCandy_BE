@@ -5,9 +5,9 @@ import lombok.Builder;
 @Builder
 public record GptMessage(
         String role,
-        String content
+        Object content
 ) {
-    public static GptMessage of(final String role, final String content) {
+    public static GptMessage of(final String role, final Object content) {
         return GptMessage.builder()
                 .role(role)
                 .content(content)

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static shop.catchmind.gpt.constant.GptConstant.*;
 
@@ -34,22 +35,22 @@ public class GptService {
     @Value(value = "${GPT_API_KEY}")
     private String apiKey;
 
-    public InterpretDto interpretPicture(final NaturalLanguageDto dto, final PictureType pictureType, final MultipartFile file) {
-        List<GptMessage> messages = createGptMessages(dto, pictureType);
+    public InterpretDto interpretPicture(final NaturalLanguageDto dto, final PictureType pictureType, final String imageUrl) {
+        List<GptMessage> messages = createGptMessages(dto, pictureType, imageUrl);
         log.info("Request Messages: {}", messages);
 
         HashMap<String, Object> requestBody = createRequestBody(messages);
 
-        GptResponse chatGptRes = getResponse(createHttpEntity(requestBody, file));
+        GptResponse chatGptRes = getResponse(createHttpEntity(requestBody));
 
-        String response = chatGptRes.choices().get(0).message().content();
+        String response = (String) chatGptRes.choices().get(0).message().content();
         log.info("Response: {}", response);
 
         return InterpretDto.builder().data(response).build();
     }
 
     // GPT 에 요청할 메시지를 만드는 메서드
-    private static List<GptMessage> createGptMessages(final NaturalLanguageDto dto, final PictureType pictureType) {
+    private static List<GptMessage> createGptMessages(final NaturalLanguageDto dto, final PictureType pictureType, final String imageUrl) {
         List<GptMessage> messages = new ArrayList<>();
 
         // gpt 역할(프롬프트) 설정
@@ -63,7 +64,14 @@ public class GptService {
         }
 
         // 실제 요청
-        messages.add(GptMessage.of(USER, dto.value()));
+        if (pictureType == PictureType.GENERAL) {
+            messages.add(GptMessage.of(USER, dto.value()));
+        } else {
+            List<Object> content = new ArrayList<>();
+            content.add(Map.of("type", "text", "text", dto.value()));
+            content.add(Map.of("type", "image_url", "image_url", Map.of("url", imageUrl)));
+            messages.add(GptMessage.of(USER, content));
+        }
 
         return messages;
     }
@@ -79,25 +87,17 @@ public class GptService {
     }
 
     // api 호출에 필요한 Http Header를 만들고 HTTP 객체를 만드는 메서드
-    public HttpEntity<MultiValueMap<String, Object>> createHttpEntity(final HashMap<String, Object> chatGptRequest, final MultipartFile file) {
+    public HttpEntity<HashMap<String, Object>> createHttpEntity(final HashMap<String, Object> chatGptRequest) {
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+        httpHeaders.setContentType(MediaType.parseMediaType(MEDIA_TYPE));
         httpHeaders.add(AUTHORIZATION, BEARER + apiKey);
 
-        // 파일을 MultiValueMap에 담아서 전송
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("request", chatGptRequest);
-        try {
-            body.add("file", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to read the file", e);
-        }
-        return new HttpEntity<>(body, httpHeaders);
+        return new HttpEntity<>(chatGptRequest, httpHeaders);
     }
 
     // GPT API 요청후 response body를 받아오는 메서드
-    public GptResponse getResponse(final HttpEntity<MultiValueMap<String, Object>> httpEntity) {
+    public GptResponse getResponse(final HttpEntity<HashMap<String, Object>> httpEntity) {
 
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         // 답변이 길어질 경우 TimeOut Error 발생하므로 time 설정
