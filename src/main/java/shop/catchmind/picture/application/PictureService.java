@@ -87,7 +87,7 @@ public class PictureService {
                     }
 
                     // GPT 서비스로부터 해석 결과 받기
-                    InterpretDto interpretDto = gptService.interpretPicture(NaturalLanguageDto.of(value), pictureType);
+                    InterpretDto interpretDto = gptService.interpretPicture(NaturalLanguageDto.of(value), pictureType, image);
                     String interpretedContent = removeNumbersInParentheses(interpretDto.data());
 
                     // Picture 객체 생성 및 저장
@@ -100,9 +100,8 @@ public class PictureService {
 
                     // generalQuestionBuilder에 각 Picture의 콘텐츠를 추가
 //                    generalQuestionBuilder.append(interpretedContent);
-                    // -> 종합해석에 자연어 값을 넘김.
                     generalQuestionBuilder.append("[" + pictureType + "]");
-                    generalQuestionBuilder.append(NaturalLanguageDto.of(value));
+                    generalQuestionBuilder.append(interpretedContent);
 
                     return picture;
                 }).toList();
@@ -112,7 +111,7 @@ public class PictureService {
 
         result.updateContent(
                 gptService.interpretPicture(
-                        NaturalLanguageDto.of(generalQuestionBuilder.toString()), PictureType.GENERAL).data()
+                        NaturalLanguageDto.of(generalQuestionBuilder.toString()), PictureType.GENERAL, null).data()
         );
 
         return InterpretResponse.of(pictureList, result);
